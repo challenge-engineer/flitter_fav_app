@@ -1,76 +1,74 @@
 import 'package:flutter/material.dart';
-
-import 'edit_page.dart';
+import 'package:fluttertodoapp/todo_add_page.dart';
 
 void main() {
-  runApp(MyApp());
+  // 最初に表示するWidget
+  runApp(MyTodoApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyTodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.amber,
-            title: Text('fav',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            bottom: TabBar(
-              tabs: [
-                Tab(text:'お気に入り'),
-                Tab(text:'お買い物'),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: <Widget>[
-              ListView(
-                children: <Widget>[
-                  Card(
-                    child: ListTile(
-                      title: Text('ベビーオイル'),
-                      subtitle: Text('Amazon'),
-                      trailing: Icon(Icons.share),
-                      onTap: (){
+      debugShowCheckedModeBanner: false,
+      title: 'My Todo App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: TodoListPage(),
+    );
+  }
+}
 
-                      },
-                    ),
-                  ),
-                  Card(
-                    child: ListTile(
-                      title: Text('げきおちくん'),
-                      subtitle: Text('楽天'),
-                      trailing: Icon(Icons.share),
-                    ),
-                  ),
-                ],
-              ),
-              ListView(
-                children: <Widget>[
-                  Card(
-                    child: ListTile(
-                      title: Text('シャンプー'),
-                      subtitle: Text('楽天'),
-                      trailing: Icon(Icons.share),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: (){
-              // todo
-            },
-            backgroundColor: Colors.amber,
-            child: Icon(Icons.add),
-          ),
-        ),
+// リスト一覧画面用Widget
+class TodoListPage extends StatefulWidget{
+  @override
+  _TodoListPageState createState() => _TodoListPageState();
+}
+
+
+class _TodoListPageState extends State<TodoListPage> {
+  // Todoリストのデータ
+  List<String> todoList = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.amber,
+        title: Text('fav', style: TextStyle(color: Colors.white),),
+      ),
+      body: ListView.builder(
+        itemCount: todoList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              title: Text(todoList[index]),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // "push"で新規画面に遷移
+          // リスト追加画面から渡される値を受け取る
+          final newListText = await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              // 遷移先の画面としてリスト追加画面を指定
+              return TodoAddPage();
+            }),
+          );
+          if (newListText != null) {
+            // キャンセルした場合は newListText が null となるので注意
+            setState(() {
+              // リスト追加
+              todoList.add(newListText);
+            });
+          }
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.amber,
       ),
     );
   }
